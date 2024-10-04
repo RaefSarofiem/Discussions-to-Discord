@@ -1,12 +1,17 @@
 import logging
 import discord
+from dotenv import load_dotenv 
+import os
+
+load_dotenv('sensitive.env')
 
 ##discord server id your bot is in
-dcid=0
+dcid=os.getenv('DCID')
 dguild= discord.Object(id=dcid)
 dname="rise"
 ddescription= "good ol test"
-dtoken='token here'
+dtoken=os.getenv('DTOKEN')
+print(dtoken)
 
 #logging for debugging
 logging.basicConfig(level=logging.INFO)
@@ -26,11 +31,11 @@ class cclient(discord.Client):
         intents.dm_messages=False
 
         
-        super().__init__(intents)
+        super().__init__(intents=intents)
         self.synced = False
 
     async def on_ready(self):
-        await self
+        await self.wait_until_ready()
         if not self.synced:
             await tree.sync(guild=dguild)
             self.synced= True
@@ -40,7 +45,7 @@ client=cclient()
 tree= discord.app_commands.CommandTree(client)
 
 @tree.command(name=dname, description=ddescription,guild=dguild)
-async def self (interact: discord.Interaction, name: str):
+async def self (interact: discord.Interaction):
     await interact.response.send_message(f"I LIVE!!!!!")
 
 client.run(dtoken)
