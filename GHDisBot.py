@@ -21,25 +21,25 @@ class launchTicket(discord.ui.View):
     @discord.ui.button(label= "Ask a CSA Mentor", style=discord.ButtonStyle.green,custom_id="request-ticket" )
     #callback for checking button status
     async def ticket(self,interac: discord.Interaction, button: discord.ui.Button ):
-        tick = discord.utils.get(interac.guild.text_channels, name=f"{interac.user.name}'s Ticket -- {interac.user.discriminator}")
+        tick = discord.utils.get(interac.guild.text_channels, name=(f"ticket-for-{interac.user.name}-{interac.user.discriminator}"))
         ## TODO: fix the multiple ticket issue (can just make as many tickets as you'd like with same name)
-        if tick is not None: ##ticket is already created
+        if tick != None: ##ticket is already created
             await interac.response.send_message(f"looks like you already have a discussion ticket open ({tick.mention}). If you want to make a" 
-                                                "new discussion ticket, close the open one first. otherwise, continue using the open ticket"
-                                                "to reply in the same discussion.", ephemeral = True)
+                                                " new discussion ticket, close the open one first. otherwise, continue using the open ticket"
+                                                " to reply in the same discussion.", ephemeral = True)
         else:
             ## overwriting permissions for users to make a public channel
             ticket_overwrites = {
                 #default role is @everyone
                 interac.guild.default_role: discord.PermissionOverwrite(view_channel= False),
                 interac.user: discord.PermissionOverwrite(view_channel= True, send_messages= True),
-                #"me" is the bot
+                #"me" is the bot . maybe "I" am a bot too?
                 interac.guild.me: discord.PermissionOverwrite(view_channel= True, send_messages=True, read_message_history= True)
             }
             #TODO: anti spam tool
             #TODO: button in room to end discussion (pop up menu with a command)
             
-            channel = await interac.guild.create_text_channel(name=f"{interac.user.name}'s Ticket -- {interac.user.discriminator}",
+            channel = await interac.guild.create_text_channel(name=(f"ticket-for-{interac.user.name}-{interac.user.discriminator}"),
             overwrites= ticket_overwrites, reason= (f"Ticket for {interac.user}") )
             await channel.send(f"{interac.user.mention} created a ticket")
             await interac.response.send_message((f"ticket made, you can go talk to CSA mentors at {channel.mention}"), ephemeral=True)
